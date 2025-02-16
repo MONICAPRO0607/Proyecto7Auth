@@ -1,4 +1,5 @@
 const Article = require("../models/article");
+// const { lanzarSemilla } = require("../../utils/seeds/article.js")
 
 //! CRUD -> create read update delete
 
@@ -43,4 +44,13 @@ const getArticleByPrice = async (req, res, next) => {
   }
 };
 
-module.exports = { postArticle, getArticle, getArticleByPrice };
+const chargeSeed = async (req, res, next) => {
+  try {
+    lanzarSemilla();
+    return res.status(200).json(res);
+  } catch(error){
+    return res.status(400).json(error);
+  }
+}
+
+module.exports = { postArticle, getArticle, getArticleByPrice, chargeSeed };
