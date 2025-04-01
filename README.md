@@ -11,10 +11,10 @@ Realizado con éxito, cambiando "users" por "customers".
 
 4. Una semilla que suba datos a una de las colecciones
 Realizado con éxito: 
-Se ha creado una semilla de datos, que están en data/article.js. Está comentada?
-Se ha creado un método en controllers/aricle.js que llama a la función lanzarSemilla. 
+Se ha creado una semilla de datos, que están en data/article.js. 
+Se ha creado un método en controllers/aricle.js que llama a la función launchSeed. 
 
-5. Dos relaciones entre colecciones, la idea es que los usuarios tengan un dato relacionado también
+5. Dos relaciones entre colecciones, la idea es que los usuarios tengan un dato relacionado también.
 
 6. CRUD completo de todas las colecciones
 Endpoints: 

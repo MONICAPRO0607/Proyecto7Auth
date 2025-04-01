@@ -11,6 +11,14 @@ const { launchSeed } = require("../../utils/seeds/seed.js")
 //     return res.status(400).json({ message: "Ha fallado la petición", error: error.message });
 // }
 // };
+const getArticles = async (req, res, next) => {
+  try {
+    const articles = await Article.find();
+    return res.status(200).json(articles);
+  } catch (error) {
+    return res.status(400).json({ message: "Error al obtener artículos", error: error.message});
+  }
+}; 
 
 const postArticle = async (req, res, next) => {
   try {
@@ -21,7 +29,7 @@ const postArticle = async (req, res, next) => {
     const articleSaved = await newArticle.save();
 
     // Buscar al usuario (vendedor) que está asociado con este artículo
-    const user = await Users.findById(req.user.id); // Asegúrate de que `req.user.id` sea el ID del vendedor
+    const user = await user.findById(req.user.id); // Asegúrate de que `req.user.id` sea el ID del vendedor
 
     if (!user) {
       return res.status(400).json({ message: "Usuario no encontrado" });
@@ -97,4 +105,4 @@ const chargeSeed = async (req, res, next) => {
 };
 
 
-module.exports = { postArticle, getArticle, getArticleByPrice, updateArticle, deleteArticle, chargeSeed };
+module.exports = { getArticles, postArticle, getArticle, getArticleByPrice, updateArticle, deleteArticle, chargeSeed };

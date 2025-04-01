@@ -12,7 +12,7 @@ const getUsers = async (req, res, next) => {
       .status(400)
       .json({ message: 'Error al gettear users', error: error.message })
   }
-}
+};
 
 const register = async (req, res, next) => {
   try {
@@ -32,7 +32,7 @@ const register = async (req, res, next) => {
       error: error.message
     })
   }
-}
+};
 
 const login = async (req, res, next) => {
   try {
@@ -52,18 +52,18 @@ const login = async (req, res, next) => {
       .status(400)
       .json({ message: 'Error al iniciar sesión', error: error.message })
   }
-}
+};
 
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params
-    const user = await User.findById(id)
+    const user = await user.findById(id)
 
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado' })
     }
 
-    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
+    const updatedUser = await user.findByIdAndUpdate(id, req.body, {
       new: true
     })
     return res.status(200).json(updatedUser)
@@ -72,7 +72,7 @@ const updateUser = async (req, res) => {
       .status(400)
       .json({ message: 'Error al actualizar usuario', error: error.message })
   }
-}
+};
 
 const deleteUser = async (req, res) => {
   try {
@@ -89,6 +89,6 @@ const deleteUser = async (req, res) => {
       .status(400)
       .json({ message: 'Error al eliminar usuario', error: error.message })
   }
-}
+};
 
 module.exports = { getUsers, register, login, updateUser, deleteUser }
