@@ -1,11 +1,14 @@
-const { postArticle, getArticle, getArticleByPrice, chargeSeed } = require("../controllers/article");
+const { isAuth, isAdmin } = require("../../middlewares/auth");
+const { postArticle, getArticle, getArticleByPrice, chargeSeed, updateArticle, deleteArticle } = require("../controllers/article");
 
 const articleRoutes = require("express").Router();
 
-articleRoutes.post("/", postArticle);
-articleRoutes.get("/", getArticle);
-articleRoutes.get("/getArticleByPrice/:price", getArticleByPrice);
-// articleRoutes.get("/seed", chargeSeed);
+articleRoutes.post("/", [isAuth], postArticle);
+articleRoutes.get("/:vendor", getArticle);
+articleRoutes.get("/getArticleByPrice/:price", [isAuth], getArticleByPrice);
+articleRoutes.put("/:id", [isAuth], updateArticle);
+articleRoutes.delete("/:id", [isAuth, isAdmin], deleteArticle);
+articleRoutes.get("/seed", chargeSeed);
 
 
 module.exports = articleRoutes;

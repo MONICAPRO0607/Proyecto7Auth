@@ -5,31 +5,30 @@ const bcrypt = require("bcrypt");
 const getCustomers = async (req, res, next) => {
   try {
     const customers = await Customers.find();
-    return res.status(200).json(customers)
+    return res.status(200).json(customers);
   } catch (error) {
-    return res.status(400).json("Error")
+    return res.status(400).json({ message: "Error al obtener clientes", error: error.message});
   }
 };
-//! postUser - Create
+
 const register = async (req, res, next) => {
+
   try {
     const newCustomer = new Customers({
       customerName: req.body.customerName,
       password: req.body.password,
-      rol: req.body.rol
+      rol: "user"
     });
 
     const customerDuplicated = await Customers.findOne({ customerName: req.body.customerName });
-
     if (customerDuplicated) {
       return res.status(400).json("Ese nombre del cliente ya existe");
-    }
+    };
 
     const customerSaved = await newCustomer.save();
-
     return res.status(201).json(customerSaved);
   } catch (error) {
-    return res.status(400).json({messge: "Error al crear un nuevo cliente", error:error.message});
+    return res.status(400).json({message: "Error al crear un nuevo cliente", error:error.message});
   }
 };
 
@@ -57,14 +56,30 @@ const login = async (req, res, next) => {
 const deleteCustomers = async (req, res, next) => {
   try {
     const { id } = req.params;
+    if (req.user._id.toString() !== id) {
+      return res.status(403).json({ message: "No puedes eliminar a otro usuario." });
+    }
     const customersDeleted = await Customers.findByIdAndDelete(id);
-    return res.status(200).json({
-      mensaje: "Este cliente ha sido eliminado",
-      customersDeleted,
-    });
+    return res.status(200).json({ mensaje: "Este cliente ha sido eliminado", customersDeleted });
   } catch (error) {
     return res.status(400).json(error);
   }
 };
 
-module.exports = { getCustomers, register, login, deleteCustomers };
+// Controlador para cambiar rol a admin
+const changeRole = async (req, res, next) => {
+  try {
+      const { id } = req.params;
+      const customer = await Customers.findById(id);
+      if (!customer) {
+          return res.status(404).json("Cliente no encontrado");
+      }
+      customer.rol = "admin"; // Cambiar rol a admin
+      await customer.save();
+      return res.status(200).json(customer);
+  } catch (error) {
+      return res.status(400).json({ message: "Error al cambiar rol", error: error.message });
+  }
+};
+
+module.exports = { getCustomers, register, login, deleteCustomers, changeRole };

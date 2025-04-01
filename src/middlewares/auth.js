@@ -1,52 +1,111 @@
-const Sellers = require('../api/models/sellers')
-const { verifyToken } = require('../config/jwt')
+// const Users = require('../api/models/users')
+// const Customers = require('../api/models/customers')
+// const { verifyToken } = require('../config/jwt')
+
+// const isAuth = async (req, res, next) => {
+//   // console.log('req', req, 'res', res, 'next', next);
+//   console.log('req', req.headers)
+//   // console.log('res', res);
+//   // console.log('next', next);c
+
+//   try {
+//     const token = req.headers.authorization
+
+//     if (!token) {
+//       return res.status(400).json('No estás autorizado')
+//     }
+
+//     const parsedToken = token.replace('Bearer ', '')
+//     const { id } = verifyToken(parsedToken)
+
+//     if (!decoded || !decoded.id) {
+//       return res.status(401).json({ message: 'Token inválido' }) // No hace falta el error aquí
+//     }
+//     const user = await Users.findById(id)
+//     if (!user) {
+//       user = await Customers.findById(id)
+//       if (!user) {
+//         return res.status(401).json({ message: 'No estás autorizado' })
+//       }
+//       req.customers = user
+//     } else {
+//       req.users = user
+//     }
+//     user.password = undefined
+//     next()
+//   } catch (error) {
+//     return res
+//       .status(401)
+//       .json({ message: 'Token inválido', error: error.message })
+//   }
+// }
+
+// const isAdmin = async (req, res, next) => {
+//   try {
+//     const token = req.headers.authorization
+//     if (!token) {
+//       return res.status(400).json({ message: 'No estás autorizado' })
+//     }
+//     const parsedToken = token.replace('Bearer ', '')
+//     const { id } = verifyToken(parsedToken, process.env.JWT_SECRET)
+//     const users = await users.findById(id)
+//     if (Users.role !== 'admin') {
+//       return res
+//         .status(403)
+//         .json({ message: 'No tienes permisos de administrador' })
+//     }
+//     Users.password = null
+//     req.user = Users
+//     next()
+//   } catch (error) {
+//     return res
+//       .status(400)
+//       .json({ message: 'No estás autorizado', error: error.message })
+//   }
+// }
+
+// module.exports = { isAuth, isAdmin }
+
+const User = require("../api/models/users");
+const { verifyJwt } = require("../config/jwt");
 
 const isAuth = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization
+    try {
+        const token = req.headers.authorization;
+        const parsedToken = token.replace("Bearer ", "");
 
-    if (!token) {
-      return res
-        .status(400)
-        .json({ message: 'No estás autorizado 1', error: error.message })
+        const { id } = verifyJwt(parsedToken);
+
+        const user = await User.findById(id);
+
+        user.password = null;
+        req.user = user;
+        next();
+    } catch (error) {
+        return res.status(400).json("No estás autorizado");
     }
-
-    const parsedToken = token.replace('Bearer ', '')
-    const { id } = verifyToken(parsedToken)
-    const sellers = await Sellers.findById(id)
-
-    sellers.password = null
-    req.sellers = sellers
-    next()
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ message: 'No estás autorizado 2', error: error.message })
-  }
 }
 
 const isAdmin = async (req, res, next) => {
     try {
         const token = req.headers.authorization;
         const parsedToken = token.replace("Bearer ", "");
-        
-        const { id } = verifyToken(parsedToken, process.env.JWT_SECRET);
-        const sellers = await Sellers.findById(id);
 
-        if (sellers.sellersName === "admin") {
-          sellers.password = null;
-          req.sellers = sellers;
-          next();
-      } else {
-          return res.status(400).json("No puedes realizar la acción al no ser administrador");
-      }
+        const { id } = verifyJwt(parsedToken);
 
-        if (!token) {
-            return res.status(400).json({message: "No estás autorizado 3", error:error.message})
+        const user = await User.findById(id);
+
+        if (user.role === "admin") {
+            user.password = null;
+            req.user = user;
+            next();
+        } else {
+            return res.status(400).json("Esta acción sólo la pueden realizar los administradores")
         }
 
+        
     } catch (error) {
-        return res.status(400).json({message: "No estás autorizado 4", error:error.message});
+        return res.status(400).json("No estás autorizado");
     }
 }
 

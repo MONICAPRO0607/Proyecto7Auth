@@ -11,11 +11,10 @@ Realizado con éxito, cambiando "users" por "customers".
 
 4. Una semilla que suba datos a una de las colecciones
 Realizado con éxito: 
-Se ha creado una semilla de datos, que están en data/article.js. Está comentada.
-Se ha creado un método en controllers/aricle.js que llama a la función lanzarSemilla. Está comentada.
+Se ha creado una semilla de datos, que están en data/article.js. Está comentada?
+Se ha creado un método en controllers/aricle.js que llama a la función lanzarSemilla. 
 
 5. Dos relaciones entre colecciones, la idea es que los usuarios tengan un dato relacionado también
-PENDIENTE
 
 6. CRUD completo de todas las colecciones
 Endpoints: 
@@ -28,6 +27,8 @@ Endpoints:
   -- articleRoutes.post("/", postArticle);  --> crea un nuevo artículo
   -- articleRoutes.get("/", getArticle);  --> obtiene todos los artículos
   -- articleRoutes.get("/getArticleByPrice/:price", getArticleByPrice);  --> obtiene el artículo filtrando por precio
+  -- updateArticle
+  -- deleteArticle ()
   -- articleRoutes.get("/seed", chargeSeed);  --> sube una semilla de datos a la colección de artículos en la BBDD
 - customers: PENDIENTE DE ARREGLAR LOS PERMISOS DE ADMIN Y AUTH
   -- customersRoutes.get("/", getCustomers);  --> obtiene todos los clientes

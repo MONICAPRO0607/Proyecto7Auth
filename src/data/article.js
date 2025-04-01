@@ -1,5 +1,5 @@
 const articles = [
-  { name: "Cuadro de madera pintado", vendor: "WoodenArt", img: "https://example.com/img/cuadro_madera.jpg", price: 75, type: "Arte en madera" },
+  { id: 1, name: "Cuadro de madera pintado", vendor: "WoodenArt", img: "https://example.com/img/cuadro_madera.jpg", price: 75, type: "Arte en madera" },
   { name: "Macramé decorativo", vendor: "FiberCraft", img: "https://example.com/img/macrame.jpg", price: 40, type: "Decoración" },
   { name: "Vaso cerámico pintado", vendor: "CeramicaDesign", img: "https://example.com/img/vaso_ceramico.jpg", price: 30, type: "Cerámica" },
   { name: "Alfombra de lana tejida", vendor: "TextileArt", img: "https://example.com/img/alfombra_lana.jpg", price: 100, type: "Textiles" },
