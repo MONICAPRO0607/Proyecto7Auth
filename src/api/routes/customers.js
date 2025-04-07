@@ -6,7 +6,7 @@ customersRoutes.get("/", [isAuth, isAdmin], getCustomers);
 customersRoutes.post("/register", register);
 customersRoutes.post("/login", login);
 customersRoutes.delete("/:id", [isAuth, isAdmin], deleteCustomers);
-customersRoutes.post("/", [isAdmin], changeRole);
+customersRoutes.post("/", isAdmin, changeRole);
 
 
 module.exports = customersRoutes;

@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 // una función para crear una llave (token)
 const generateToken = (id) => {
@@ -7,11 +7,11 @@ const generateToken = (id) => {
 
 // comprobar si esa llave fue creada correctamente
 const verifyToken = (token) => {
-  try {
+  // try {
     return jwt.verify(token, process.env.JWT_SECRET)
-  } catch (error) {
-    return null // O lanza un error personalizado, según necesidad.
-  }
+  // } catch (error) {
+  //   return null // O lanza un error personalizado, según necesidad.
+  // }
 }
 
 module.exports = { generateToken, verifyToken }

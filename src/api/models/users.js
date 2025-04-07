@@ -14,12 +14,11 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.pre("save", function () {
+userSchema.pre("save", function (next) {
   if (this.isModified("password")) {
-    this.password = bcrypt.hashSync(this.password, 10);
-  }
+    this.password = bcrypt.hashSync(this.password, 10), next()}
 });
 
-const Users = mongoose.model("users", userSchema, "users");
+const User = mongoose.model("users", userSchema, "users");
 
-module.exports = Users;
+module.exports = User;
