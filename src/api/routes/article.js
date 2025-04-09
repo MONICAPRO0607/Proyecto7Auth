@@ -3,8 +3,8 @@ const { getArticles, postArticle, getArticle, getArticleByPrice, chargeSeed, upd
 
 const articleRoutes = require("express").Router();
 
-articleRoutes.get("/",  isAdmin, getArticles);
-articleRoutes.post("/", [isAuth, isAdmin], postArticle);
+articleRoutes.get("/", getArticles);
+articleRoutes.post("/", postArticle);
 articleRoutes.get("/:vendor", [isAuth, isAdmin], getArticle);
 articleRoutes.get("/getArticleByPrice/:price", [isAuth, isAdmin], getArticleByPrice);
 articleRoutes.put("/:id", isAuth, updateArticle);

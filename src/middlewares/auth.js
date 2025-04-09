@@ -19,25 +19,28 @@ const isAuth = async (req, res, next) => {
 
 const isAdmin = async (req, res, next) => {
   try {
-    const token = req.headers.authorization
-    const parsedToken = token.replace('Bearer ', '')
+      const token = req.headers.authorization;
+      if (!token) return res.status(401).json('No se proporcionó token');
 
-    const { id } = verifyToken(parsedToken)
+      const parsedToken = token.replace('Bearer ', '');
+      const { id } = verifyToken(parsedToken);
+      if (!id) return res.status(401).json('Token no válido');
 
-    const user = await User.findById(id)
+      const user = await User.findById(id);
+      if (!user) {
+          return res.status(404).json({ message: "Usuario no encontrado" });
+      }
 
-    if (user.role === 'admin') {
-      user.password = null
-      req.user = user
-      next()
-    } else {
-      return res
-        .status(400)
-        .json('Esta acción sólo la pueden realizar los administradores')
-    }
+      if (user.role === 'admin') {
+          user.password = null;
+          req.user = user;
+          next();
+      } else {
+          return res.status(403).json('Esta acción sólo la pueden realizar los administradores');
+      }
   } catch (error) {
-    return res.status(400).json('No estás autorizado')
+      return res.status(400).json('No estás autorizado');
   }
-}
+};
 
 module.exports = { isAuth, isAdmin }

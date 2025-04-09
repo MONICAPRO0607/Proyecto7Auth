@@ -1,16 +1,6 @@
 const Article = require("../models/article");
 const { launchSeed } = require("../../utils/seeds/seed.js")
 
-// const postArticle = async (req, res, next) => {
-//   try {
-//     const newArticle = new Article(req.body);
-//     newArticle.verified = req.user.role === "Admin"; // Verifica si el vendedor es admin
-//     const articleSaved = await newArticle.save();
-//     return res.status(201).json(articleSaved);
-// } catch (error) {
-//     return res.status(400).json({ message: "Ha fallado la petición", error: error.message });
-// }
-// };
 const getArticles = async (req, res, next) => {
   try {
     const articles = await Article.find();
@@ -22,14 +12,19 @@ const getArticles = async (req, res, next) => {
 
 const postArticle = async (req, res, next) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Usuario no autenticado" });
+    };
+    
     const newArticle = new Article(req.body);
-    newArticle.verified = req.user.role === "Admin"; // Verifica si el vendedor es admin
+
+    newArticle.verified = req.user.role === "admin"; // Verifica si el vendedor es admin
 
     // Guardar el artículo en la base de datos
     const articleSaved = await newArticle.save();
 
     // Buscar al usuario (vendedor) que está asociado con este artículo
-    const user = await user.findById(req.user.id); // Asegúrate de que `req.user.id` sea el ID del vendedor
+    const user = await User.findById(req.user.id); // Asegúrate de que `req.user.id` sea el ID del vendedor
 
     if (!user) {
       return res.status(400).json({ message: "Usuario no encontrado" });

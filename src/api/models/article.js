@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const articlesSchema = new mongoose.Schema({
   name: {type: String, required: true},
-  vendor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  vendor: { type: String, required: true },
+  // vendor: { type: String, ref: 'user' },
   img: {type: String, required: true},
   price: {type: Number, required: true},
   type: {type: String, required: true, enum: [
