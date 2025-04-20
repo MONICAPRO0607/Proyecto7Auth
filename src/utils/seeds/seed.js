@@ -30,3 +30,37 @@ const launchSeed = async () => {
 }
 
 // launchSeed();
+
+// const mongoose = require('mongoose');
+// const User = require('../models/User');
+// const connectDB = require('../config/db');
+// require('dotenv').config();
+
+// // Función para promover un usuario a administrador
+// const createAdmin = async (email) => {
+//   try {
+//     await connectDB();
+    
+//     // Buscar el usuario por email
+//     const user = await User.findOne({ email });
+    
+//     if (!user) {
+//       console.error(`❌ Usuario con email ${email} no encontrado`);
+//       process.exit(1);
+//     }
+    
+//     // Actualizar a rol de administrador
+//     user.role = 'admin';
+//     await user.save();
+    
+//     console.log(`✅ Usuario ${user.username} (${user.email}) promovido a administrador`);
+//     process.exit();
+//   } catch (error) {
+//     console.error(`❌ Error: ${error.message}`);
+//     process.exit(1);
+//   }
+// };
+
+// // Obtener email desde la línea de comandos o usar el predeterminado
+// const adminEmail = process.argv[2] || 'admin@example.com';
+// createAdmin(adminEmail);

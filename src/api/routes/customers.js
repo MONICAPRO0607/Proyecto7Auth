@@ -1,11 +1,12 @@
 const { isAuth, isAdmin } = require("../../middlewares/auth");
-const { register, login, deleteCustomers, getCustomers, changeRole } = require("../controllers/customers");
+const { createCustomer, login, updateCustomer, deleteCustomer, getCustomers, changeRole } = require("../controllers/customers");
 const customersRoutes = require("express").Router();
 
 customersRoutes.get("/", [isAuth, isAdmin], getCustomers);
-customersRoutes.post("/register", register);
+customersRoutes.post("/createCustomer", createCustomer);
 customersRoutes.post("/login", login);
-customersRoutes.delete("/:id", [isAuth, isAdmin], deleteCustomers);
+customersRoutes.put("/updateCustomer", updateCustomer);
+customersRoutes.delete("/:id", [isAuth, isAdmin], deleteCustomer);
 customersRoutes.post("/", isAdmin, changeRole);
 
 

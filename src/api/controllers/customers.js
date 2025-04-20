@@ -11,34 +11,42 @@ const getCustomers = async (req, res, next) => {
       .status(400)
       .json({ message: 'Error al obtener clientes', error: error.message })
   }
-}
+};
 
-const register = async (req, res, next) => {
+
+const createCustomer = async (req, res) => {
   try {
-    const newCustomer = new Customers({
-      customerName: req.body.customerName,
-      password: req.body.password,
-      rol: 'user'
-    })
+    const { customerName, password, rol, article } = req.body;
 
-    const customerDuplicated = await Customers.findOne({
-      customerName: req.body.customerName
-    })
-    if (customerDuplicated) {
-      return res.status(400).json('Ese nombre del cliente ya existe')
+    // Verificar si el cliente existe y coincide con su password 
+    const customerExists = await customer.findOne({ password });
+    
+    if (customerExists) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ya existe este cliente'
+      });
     }
 
-    const customerSaved = await newCustomer.save()
-    return res.status(201).json(customerSaved)
+    // Crear el cliente
+    const customer = await customer.create({
+      customerName, password, rol, article,
+      createdBy: req.user._id // El creador es el usuario autenticado
+    });
+
+    res.status(201).json({
+      success: true,
+      data: customer
+    });
   } catch (error) {
-    return res
-      .status(400)
-      .json({
-        message: 'Error al crear un nuevo cliente',
-        error: error.message
-      })
+    res.status(400).json({
+      success: false,
+      message: 'Error al crear el cliente',
+      error: error.message
+    });
   }
-}
+};
+
 
 const login = async (req, res, next) => {
   try {
@@ -75,24 +83,83 @@ const login = async (req, res, next) => {
         error: error.message
       })
   }
-}
+};
 
-const deleteCustomers = async (req, res, next) => {
+const updateCustomer = async (req, res) => {
   try {
-    const { id } = req.params
-    if (req.user._id.toString() !== id) {
-      return res
-        .status(403)
-        .json({ message: 'No puedes eliminar a otro usuario.' })
+    let customer = await customer.findById(req.params.id);
+
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cliente no encontrado'
+      });
     }
-    const customersDeleted = await Customers.findByIdAndDelete(id)
-    return res
-      .status(200)
-      .json({ mensaje: 'Este cliente ha sido eliminado', customersDeleted })
+
+    // Verificar si el usuario tiene permiso para actualizar este cliente
+    if (req.user.role !== 'admin' && 
+        req.user._id.toString() !== customer.createdBy.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permisos para actualizar este cliente'
+      });
+    }
+
+    // Actualizar el cliente
+    customer = await customer.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    ).populate('createdBy', 'username email');
+
+    res.status(200).json({
+      success: true,
+      data: customer
+    });
   } catch (error) {
-    return res.status(400).json(error)
+    res.status(500).json({
+      success: false,
+      message: 'Error al actualizar el cliente',
+      error: error.message
+    });
   }
-}
+};
+
+const deleteCustomer = async (req, res, next) => {
+  try {
+    const customer = await customer.findById(req.params.id);
+
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cliente no encontrado'
+      });
+    }
+
+    // Verificar si el usuario tiene permiso para eliminar este cliente
+    if (req.user.role !== 'admin' && 
+        req.user._id.toString() !== customer.createdBy.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permisos para eliminar este cliente'
+      });
+    }
+
+    // Eliminar el cliente
+    await customer.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: 'Cliente eliminado correctamente'
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: 'Error al eliminar el cliente',
+      error: error.message
+    });
+  }
+};
 
 // Controlador para cambiar rol a admin
 const changeRole = async (req, res, next) => {
@@ -112,4 +179,37 @@ const changeRole = async (req, res, next) => {
   }
 }
 
-module.exports = { getCustomers, register, login, deleteCustomers, changeRole }
+module.exports = { getCustomers, createCustomer, login, updateCustomer, deleteCustomer, changeRole }
+
+// const Customer = require('../models/Customer');
+
+
+
+// exports.getCustomers = async (req, res) => {
+//   try {
+//     let filter = {};
+    
+//     // Si no es admin, solo mostrar los clientes creados por el usuario
+//     if (req.user.role !== 'admin') {
+//       filter.createdBy = req.user._id;
+//     }
+
+// * No hace falta filtrar por cliente, hay que mostrarlos todos.
+
+//     res.status(200).json({
+//       success: true,
+//       count: customers.length,
+//       data: customers
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: 'Error al obtener los clientes',
+//       error: error.message
+//     });
+//   }
+// };
+
+
+
+
