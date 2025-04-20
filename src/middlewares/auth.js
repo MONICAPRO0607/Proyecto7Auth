@@ -9,7 +9,7 @@ const isAuth = async (req, res, next) => {
     const {id} = verifyToken(token, process.env.JWT_SECRET)
     req.user = await User.findById(id);
 
-    User.password = null;
+    req.user.password = null;
 
     next()
   } catch (error) {
@@ -32,7 +32,7 @@ const isAdmin = async (req, res, next) => {
       }
 
       if (user.role === 'admin') {
-          user.password = null;
+          req.user.password = null;
           req.user = user;
           next();
       } else {
@@ -46,8 +46,6 @@ const isAdmin = async (req, res, next) => {
 module.exports = { isAuth, isAdmin }
 
 
-// const jwt = require('jsonwebtoken');
-// const User = require('../models/User');
 
 // // Middleware para verificar si el usuario está autenticado
 // exports.isAuthenticated = async (req, res, next) => {
@@ -93,7 +91,7 @@ module.exports = { isAuth, isAdmin }
 //       });
 //     }
     
-//     res.status(500).json({ 
+//     res.status(400).json({ 
 //       success: false, 
 //       message: 'Error al autenticar usuario',
 //       error: error.message 
@@ -146,7 +144,7 @@ module.exports = { isAuth, isAdmin }
 //         message: 'Acceso denegado. No eres el propietario de este recurso.' 
 //       });
 //     } catch (error) {
-//       res.status(500).json({ 
+//       res.status(400).json({ 
 //         success: false, 
 //         message: 'Error al verificar permisos',
 //         error: error.message 
