@@ -19,7 +19,7 @@ const createCustomer = async (req, res) => {
     const { customerName, password, rol, article } = req.body;
 
     // Verificar si el cliente existe y coincide con su password 
-    const customerExists = await customer.findOne({ password });
+    const customerExists = await Customers.findOne({ password });
     
     if (customerExists) {
       return res.status(400).json({
@@ -29,7 +29,7 @@ const createCustomer = async (req, res) => {
     }
 
     // Crear el cliente
-    const customer = await customer.create({
+    const customer = await Customers.create({
       customerName, password, rol, article,
       createdBy: req.user._id // El creador es el usuario autenticado
     });
