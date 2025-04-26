@@ -1,5 +1,5 @@
 const { isAuth, isAdmin } = require("../../middlewares/auth");
-const { createCustomer, login, updateCustomer, deleteCustomer, getCustomers, changeRole } = require("../controllers/customers");
+const { createCustomer, login, updateCustomer, deleteCustomer, getCustomers, changeRole } = require("../controllers/Customer");
 const customersRoutes = require("express").Router();
 
 customersRoutes.get("/", [isAuth, isAdmin], getCustomers);

@@ -1,5 +1,5 @@
 const { generateToken } = require('../../utils/jwt')
-const Customers = require('../models/customers')
+const Customers = require('../models/Customer')
 const bcrypt = require('bcrypt')
 
 const getCustomers = async (req, res, next) => {
@@ -31,7 +31,7 @@ const createCustomer = async (req, res) => {
     // Crear el cliente
     const customer = await Customers.create({
       customerName, password, rol, article,
-      createdBy: req.user._id // El creador es el usuario autenticado
+      // createdBy: req.user._id // El creador es el usuario autenticado
     });
 
     res.status(201).json({

@@ -1,16 +1,16 @@
 require('dotenv').config();
 const express = require("express");
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const { connectDB } = require('./src/config/db');
-const articleRoutes = require("./src/api/routes/article");
-const usersRoutes = require('./src/api/routes/users');
-const customersRoutes = require('./src/api/routes/customers');
+const articleRoutes = require("./src/api/routes/Article");
+const usersRoutes = require('./src/api/routes/User');
+const customersRoutes = require('./src/api/routes/Customer');
 
 const app = express();
 
-connectDB();
-
 app.use(express.json());
+
+connectDB();
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);
@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 
 app.use("/api/v1/article", articleRoutes);
 app.use("/api/v1/users", usersRoutes);
-app.use("/api/v1/customers", customersRoutes);
+app.use("/api/v1/customer", customersRoutes);
 
 app.use('*', (req, res, next) => {
   return res.status(404).json('Route not found')
