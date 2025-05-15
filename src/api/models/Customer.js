@@ -15,7 +15,7 @@ const customersSchema = new mongoose.Schema(
 );
 
 customersSchema.pre("save", function () {
-  this.password = bcrypt.hashSync(this.password, 10);
+  if (this.isModified("password")) {this.password = bcrypt.hashSync(this.password, 10);}
 });
 
 const Customers = mongoose.model("customer", customersSchema, "customer");

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mongoose = require('mongoose')
 const User = require('../../api/models/User')
 const users = require('../../data/users')

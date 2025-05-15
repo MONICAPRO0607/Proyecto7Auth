@@ -86,37 +86,24 @@ API RESTful desarrollada con Node.js, Express y MongoDB Atlas, con autenticació
 ## Modelos
 
 ### Usuario (User)
-- username: String (único)
-- email: String (único)
+- username: String 
 - password: String (hasheada)
 - role: String ('user' o 'admin')
-- profile: Object (información del perfil)
 - articles: Array (artículos escritos por el usuario)
-- createdAt: Date
 
 ### Artículo (Article)
-- title: String
-- content: String
-- author: ObjectId (referencia a User)
-- tags: Array de String
-- published: Boolean
-- createdAt: Date
-- updatedAt: Date
+- name: String
+- vendor: String
+- img: String
+- price: Number
+- type: String
 
 ### Cliente (Customer)
-- name: String
-- email: String (único)
-- phone: String
-- address: Object
-- createdBy: ObjectId (referencia a User)
-- createdAt: Date
-- updatedAt: Date
+- customerName: String
+- password: String (hasheada)
+- rol: String
+- articles: String
 
-## Requisitos
-
-- Node.js
-- npm 
-- MongoDB Atlas (o MongoDB local)
 
 
 
@@ -124,50 +111,45 @@ API RESTful desarrollada con Node.js, Express y MongoDB Atlas, con autenticació
 
 - **user**: Permisos básicos (crear/editar/eliminar sus propios recursos)
 - **admin**: Permisos completos (gestión de todos los recursos y usuarios)
+- **customer**: Permisos para darse de alta, encontrarse y darse de baja.
 
 ## Endpoints
 
 ### Usuarios
 
-| Método | Ruta | Descripción | Acceso |
-|--------|------|-------------|--------|
-| POST | /api/users/register | Registrar nuevo usuario | Público |
-| POST | /api/users/login | Iniciar sesión | Público |
-| GET | /api/users/profile | Obtener perfil propio | Privado |
-| PUT | /api/users/profile | Actualizar perfil propio | Privado |
-| GET | /api/users | Obtener todos los usuarios | Admin |
-| GET | /api/users/:id | Obtener usuario por ID | Admin |
-| PUT | /api/users/:id/role | Actualizar rol de usuario | Admin |
-| DELETE | /api/users/:id | Eliminar usuario | Privado/Admin |
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | usersRoutes.get('/', getUsers); | Obtener usuarios
+| POST | usersRoutes.post('/register', register); | Registrarse usuarios
+| POST | usersRoutes.post('/login', login); | Logearse usuario
+| PUT | usersRoutes.put('/:id', isAuth, updateUser); | Modificar usuario
+| DELETE | usersRoutes.delete('/:id', [isAuth, isAdmin], deleteUser); | Eliminar usuario
+| PUT | usersRoutes.put("/change-role/:id", isAuth, changeRole);| Cambiar rol usuario
 
 ### Artículos
 
-| Método | Ruta | Descripción | Acceso |
-|--------|------|-------------|--------|
-| POST | /api/articles | Crear artículo | Privado |
-| GET | /api/articles | Obtener todos los artículos | Público/Filtrado |
-| GET | /api/articles/:id | Obtener artículo por ID | Público/Filtrado |
-| PUT | /api/articles/:id | Actualizar artículo | Privado/Owner |
-| DELETE | /api/articles/:id | Eliminar artículo | Privado/Owner |
-| GET | /api/articles/user/:userId | Obtener artículos por usuario | Público/Filtrado |
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | articleRoutes.get('/', getArticles) | Obtener artículos
+| GET | articleRoutes.get('/:vendor', getArticleByVendor) | Obtener artículos por vendedor
+| GET | articleRoutes.get('/getArticleByPrice/:price', getArticleByPrice) | Obtener artículos por precio 
+| POST | articleRoutes.post('/', isAuth, createArticle) | Crear artículos
+| PUT | articleRoutes.put('/:id', isAuth, updateArticle) | Modificar artículos
+| DELETE | articleRoutes.delete('/:id', [isAuth, isAdmin], deleteArticle) | Eliminar artículos
+
 
 ### Clientes
 
-| Método | Ruta | Descripción | Acceso |
-|--------|------|-------------|--------|
-| POST | /api/customers | Crear cliente | Privado |
-| GET | /api/customers | Obtener todos los clientes | Privado/Filtrado |
-| GET | /api/customers/:id | Obtener cliente por ID | Privado/Owner |
-| PUT | /api/customers/:id | Actualizar cliente | Privado/Owner |
-| DELETE | /api/customers/:id | Eliminar cliente | Privado/Owner |
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | customersRoutes.get("/", [isAuth, isAdmin], getCustomers); | Obtener clientes.
+| POST | customersRoutes.post("/createCustomer", [isAuth, isCustomer], createCustomer); | Crear clientes.
+| POST | customersRoutes.post("/login", isCustomer, login); | Loguear clientes.
+| PUT | customersRoutes.put("/updateCustomer", [isAuth, isCustomer], updateCustomer); | Modificar clientes.
+| DELETE | customersRoutes.delete("/:id", [isAuth, isCustomer], deleteCustomer); | Eliminar clientes.
 
-## Notas
 
-- Los usuarios solo pueden ser creados con rol 'user'
-- Los administradores pueden cambiar el rol de un usuario
-- Los usuarios pueden ver/editar/eliminar solo sus propios recursos
-- Los administradores pueden ver/editar/eliminar todos los recursos
-- Los artículos pueden ser publicados o no publicados
+
 
 ## Tecnologías Utilizadas
 

@@ -1,13 +1,14 @@
-const Article = require('../models/Article.js')
-const User = require('../models/User.js')
-const { launchSeed } = require('../../utils/seeds/seed.js')
+const mongoose = require("mongoose");
+const Article = require('../models/Article.js');
+const User = require('../models/User.js');
 
 const getArticles = async (req, res, next) => {
   try {
     const articles = await Article.find()
     return res.status(200).json(articles)
   } catch (error) {
-    return res.status(400).json({ message: 'Error al obtener artículos', error: error.message })
+    console.log("Error al obtener artículos", error);
+    return res.status(400).json('Error al obtener artículos')
   }
 };
 
@@ -16,7 +17,8 @@ const getArticleByVendor = async (req, res, next) => {
     const allArticle = await Article.find({ verified: true }).populate('vendor');
     return res.status(200).json(allArticle)
   } catch (error) {
-    return res.status(400).json({ message: 'Ha fallado la petición', error: error.message })
+    console.log("Fallo en petición de artículos por vendedor", error);
+    return res.status(400).json('Ha fallado la petición')
   }
 };
 
@@ -26,7 +28,8 @@ const getArticleByPrice = async (req, res, next) => {
     const article = await Article.find({ price: { $lte: precio } }).populate('vendor');
     return res.status(200).json(article)
   } catch (error) {
-    return res.status(400).json({ message: 'Error', error: error.message })
+    console.log("Error al obtener artículos por precio", error);
+    return res.status(400).json('Error al obtener artículos por precio')
   }
 };
 
@@ -35,52 +38,25 @@ const createArticle = async (req, res) => {
     const { name, vendor, img, price, type } = req.body;
 
     // Crear el artículo
-    const article = await Article.create({
+    const newArticle = await Article.create({
       name,
-      vendor: req.user._id,
+      vendor,
       img,
       price,
       type
-    })
-
-    // Añadir el artículo a la lista de artículos del usuario
-    await User.findByIdAndUpdate(req.user._id, {$push: { articles: article._id }})
-    res.status(201).json({success: true, data: article})
-  } catch (error) {
-    res.status(400).json({
-      success: false, message: 'Error al crear el artículo',error: error.message})
-  }
-};
-
-const postArticle = async (req, res, next) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ message: 'Usuario no autenticado' })
-    };
-
-    const newArticle = new Article(req.body);
+    });
 
     newArticle.verified = req.user.role === 'admin' // Verifica si el vendedor es admin
 
     // Guardar el artículo en la base de datos
     const articleSaved = await newArticle.save();
 
-    // Buscar al usuario (vendedor) que está asociado con este artículo
-    const user = await user.findById(req.user.id); // Asegúrate de que `req.user.id` sea el ID del vendedor
-
-    if (!user) {
-      return res.status(400).json({ message: 'Usuario no encontrado' })
-    }
-
-    // Agregar el ID del artículo al array de artículos del usuario
-    user.articles.push(articleSaved._id);
-
-    // Guardar el usuario con el nuevo artículo en su array
-    await user.save();
-
-    return res.status(201).json(articleSaved)
+    // Añadir el artículo a la lista de artículos del usuario
+    await User.findByIdAndUpdate(req.user._id, {$push: { articles: articleSaved._id }})
+    res.status(201).json({success: true, data: articleSaved})
   } catch (error) {
-    return res.status(400).json({ message: 'Ha fallado la petición', error: error.message })
+    console.log("Error al crear el artículo", error);
+    res.status(400).json('Error al crear el artículo')
   }
 };
 
@@ -95,7 +71,6 @@ const updateArticle = async (req, res, next) => {
 
     // Verificar si el usuario es el autor o un admin
     if (
-      req.user.role !== 'admin' &&
       req.user._id.toString() !== article.vendor.toString()
     ) {
       return res.status(403).json({success: false,message: 'No tienes permisos para actualizar este artículo'})
@@ -107,8 +82,8 @@ const updateArticle = async (req, res, next) => {
 
     res.status(200).json({success: true,data: article})
   } catch (error) {
-    res.status(400).json({
-      success: false, message: 'Error al actualizar el artículo',error: error.message})
+    console.log("Error al actualizar el artículo", error);
+    res.status(400).json('Error al actualizar el artículo')
   }
 };
 
@@ -140,17 +115,10 @@ const deleteArticle = async (req, res, next) => {
 
     return res.status(200).json({ message: 'Artículo eliminado', deletedArticle })
   } catch (error) {
-    return res.status(400).json({ message: 'Error al eliminar el artículo', error: error.message })
+    console.log("Error al eliminar el artículo", error);
+    return res.status(400).json('Error al eliminar el artículo')
   }
 };
 
-const chargeSeed = async (req, res, next) => {
-  try {
-    await launchSeed()
-    return res.status(200).json({ message: 'Semilla cargada correctamente' })
-  } catch (error) {
-    return res.status(400).json({ message: 'Error al cargar la semilla', error: error.message })
-  }
-}
 
-module.exports = {getArticles, getArticleByVendor, getArticleByPrice, createArticle, postArticle, updateArticle, deleteArticle, chargeSeed}
+module.exports = {getArticles, getArticleByVendor, getArticleByPrice, createArticle, updateArticle, deleteArticle}

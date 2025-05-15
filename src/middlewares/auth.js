@@ -19,21 +19,8 @@ const isAuth = async (req, res, next) => {
 
 const isAdmin = async (req, res, next) => {
   try {
-    const token = req.headers.authorization
-    if (!token) return res.status(401).json('No se proporcionó token')
 
-    const parsedToken = token.replace('Bearer ', '')
-    const { id } = verifyToken(parsedToken)
-    if (!id) return res.status(401).json('Token no válido')
-
-    const user = await User.findById(id)
-    if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' })
-    }
-
-    if (user.role === 'admin') {
-      req.user.password = null
-      req.user = user
+    if (req.user.role === 'admin') {
       next()
     } else {
       return res
@@ -43,6 +30,21 @@ const isAdmin = async (req, res, next) => {
   } catch (error) {
     return res.status(400).json('No estás autorizado')
   }
-}
+};
 
-module.exports = { isAuth, isAdmin }
+const isCustomer = async (req, res, next) => {
+  try {
+
+    if (req.user.role === 'customer') {
+      next()
+    } else {
+      return res
+        .status(403)
+        .json('Esta acción sólo la pueden realizar los administradores')
+    }
+  } catch (error) {
+    return res.status(400).json('No estás autorizado')
+  }
+};
+
+module.exports = { isAuth, isAdmin, isCustomer }

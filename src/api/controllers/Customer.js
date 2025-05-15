@@ -7,9 +7,8 @@ const getCustomers = async (req, res, next) => {
     const customers = await Customers.find()
     return res.status(200).json(customers)
   } catch (error) {
-    return res
-      .status(400)
-      .json({ message: 'Error al obtener clientes', error: error.message })
+    console.log("Error al obtener clientes", error);
+    return res.status(400).json('Error al obtener clientes')
   }
 };
 
@@ -22,10 +21,7 @@ const createCustomer = async (req, res) => {
     const customerExists = await Customers.findOne({ password });
     
     if (customerExists) {
-      return res.status(400).json({
-        success: false,
-        message: 'Ya existe este cliente'
-      });
+      return res.status(400).json({success: false, message: 'Ya existe este cliente'});
     }
 
     // Crear el cliente
@@ -34,16 +30,10 @@ const createCustomer = async (req, res) => {
       // createdBy: req.user._id // El creador es el usuario autenticado
     });
 
-    res.status(201).json({
-      success: true,
-      data: customer
-    });
+    res.status(201).json({success: true, data: customer});
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: 'Error al crear el cliente',
-      error: error.message
-    });
+    console.log("Error al crear el cliente", error);
+    res.status(400).json('Error al crear el cliente');
   }
 };
 
@@ -55,12 +45,8 @@ const login = async (req, res, next) => {
     })
 
     if (!customers) {
-      return res
-        .status(400)
-        .json({
-          message: 'El cliente o la contraseña es incorrecto',
-          error: error.message
-        })
+      console.log("El cliente o la contraseña es incorrecto", error);
+      return res.status(400).json('El cliente o la contraseña es incorrecto')
     }
 
     if (bcrypt.compareSync(req.body.password, customers.password)) {
@@ -68,20 +54,12 @@ const login = async (req, res, next) => {
       const token = generateToken(customers._id)
       return res.status(200).json({ customers, token })
     } else {
-      return res
-        .status(400)
-        .json({
-          message: 'El cliente o la contraseña es incorrecto',
-          error: error.message
-        })
+      console.log("El cliente o la contraseña es incorrecto", error);
+      return res.status(400).json('El cliente o la contraseña es incorrecto')
     }
   } catch (error) {
-    return res
-      .status(400)
-      .json({
-        message: 'El cliente o la contraseña es incorrecto',
-        error: error.message
-      })
+    console.log("El cliente o la contraseña es incorrecto", error);
+    return res.status(400).json('El cliente o la contraseña es incorrecto')
   }
 };
 
@@ -90,19 +68,14 @@ const updateCustomer = async (req, res) => {
     let customer = await customer.findById(req.params.id);
 
     if (!customer) {
-      return res.status(404).json({
-        success: false,
-        message: 'Cliente no encontrado'
-      });
+      console.log("Cliente no encontrado", error);
+      return res.status(404).json('Cliente no encontrado');
     }
 
     // Verificar si el usuario tiene permiso para actualizar este cliente
     if (req.user.role !== 'admin' && 
         req.user._id.toString() !== customer.createdBy.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: 'No tienes permisos para actualizar este cliente'
-      });
+      return res.status(403).json('No tienes permisos para actualizar este cliente');
     }
 
     // Actualizar el cliente
@@ -117,11 +90,8 @@ const updateCustomer = async (req, res) => {
       data: customer
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Error al actualizar el cliente',
-      error: error.message
-    });
+    console.log("Error al actualizar el cliente", error);
+    res.status(500).json('Error al actualizar el cliente');
   }
 };
 
@@ -130,58 +100,30 @@ const deleteCustomer = async (req, res, next) => {
     const customer = await customer.findById(req.params.id);
 
     if (!customer) {
-      return res.status(404).json({
-        success: false,
-        message: 'Cliente no encontrado'
-      });
+      console.log("Cliente no encontrado", error);
+      return res.status(404).json('Cliente no encontrado');
     }
 
     // Verificar si el usuario tiene permiso para eliminar este cliente
     if (req.user.role !== 'admin' && 
         req.user._id.toString() !== customer.createdBy.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: 'No tienes permisos para eliminar este cliente'
-      });
+      return res.status(403).json('No tienes permisos para eliminar este cliente');
     }
 
     // Eliminar el cliente
     await customer.deleteOne();
 
-    res.status(200).json({
-      success: true,
-      message: 'Cliente eliminado correctamente'
-    });
+    res.status(200).json('Cliente eliminado correctamente');
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: 'Error al eliminar el cliente',
-      error: error.message
-    });
+    console.log("Error al eliminar el cliente", error);
+    res.status(400).json('Error al eliminar el cliente');
   }
 };
 
-// Controlador para cambiar rol a admin
-const changeRole = async (req, res, next) => {
-  try {
-    const { id } = req.params
-    const customer = await Customers.findById(id)
-    if (!customer) {
-      return res.status(404).json('Cliente no encontrado')
-    }
-    customer.rol = 'admin' // Cambiar rol a admin
-    await customer.save()
-    return res.status(200).json(customer)
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ message: 'Error al cambiar rol', error: error.message })
-  }
-}
 
-module.exports = { getCustomers, createCustomer, login, updateCustomer, deleteCustomer, changeRole }
+module.exports = { getCustomers, createCustomer, login, updateCustomer, deleteCustomer}
 
-// const Customer = require('../models/Customer');
+
 
 
 
